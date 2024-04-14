@@ -28,8 +28,6 @@ const wss = new WebSocketServer({ port: 8080 });
   [wasmModule, wasmMemory] = await parseWasmModule();
 })();
 
-// console.log()
-
 wss.on("connection", function connection(ws) {
   ws.on("message", async (event) => {
     const data = "" + event;

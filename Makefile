@@ -1,5 +1,5 @@
 cf-deploy:
-	cp ./wasm/a.out.wasm ./cf-worker/a.out.wasm
+	cp ./wasm/a.out.wasm ./cf-worker/src/a.out.wasm
 	cd  ./cf-worker/ && npx wrangler deploy
 
 build-and-run:
