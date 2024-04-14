@@ -15,22 +15,30 @@ async function handleRequest(request: Request) {
 
 	server.accept();
 	server.addEventListener('message', async (event) => {
-		const { start, end, height, responseId, translateX, translateY, scale, scaleY, iterations } = JSON.parse(event.data as string);
+		// The state of the graph
+		const { start, end, height, responseId, translateX, translateY, scale, scaleY, iterations, mode } = JSON.parse(event.data as string);
+		
+		// The width of the generated image
 		const width = end - start;
 
-		wasmModule.exports.calc(width, height, translateX, translateY, scale, scaleY, start, end, iterations);
+		// Generating the image data
+		wasmModule.exports.calc(width, height, translateX, translateY, scale, scaleY, start, end, iterations, mode);
+		
+		// Pointer of the image data
 		const offset = Number(wasmModule.exports.getOffset());
-		let array = new Uint8Array(wasmMemory.buffer, Number(offset) - 12, width * height * 4 + 12);
-		let meta_data = new Uint32Array(wasmMemory.buffer, offset - 12);
 
+		// Getting the image data from WASM's memory. Offsetting to store meta-data
+		let array = new Uint8Array(wasmMemory.buffer, Number(offset) - 12, width * height * 4 + 12);
+		
+		// Storing the meta data needed by the client to render the 
+		// image in the right place
+		let meta_data = new Uint32Array(wasmMemory.buffer, offset - 12);
 		meta_data[0] = start;
 		meta_data[1] = end;
 		meta_data[2] = responseId;
 
+		// Sending the image data to the client
 		server.send(array);
-
-		meta_data = undefined;
-		array = undefined;
 	});
 
 	return new Response(null, {

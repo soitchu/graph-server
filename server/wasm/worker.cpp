@@ -13,6 +13,7 @@ using namespace std;
 uint8_t result[8294400];
 uint8_t val[4];
 int MAX_ITERATION = 1000;
+int mode = 0;
 
 extern "C" {
 EXTERN EMSCRIPTEN_KEEPALIVE void cal(double x, double y) {
@@ -21,8 +22,14 @@ EXTERN EMSCRIPTEN_KEEPALIVE void cal(double x, double y) {
   double xtemp2 = 0;
 
   while (xTemp * xTemp + yTemp * yTemp <= 4 && iterations < MAX_ITERATION) {
-    xtemp2 = xTemp * xTemp - yTemp * yTemp + x;
-    yTemp = 2 * xTemp * yTemp + y;
+    if(mode == 1) {
+      xtemp2 = xTemp * xTemp - yTemp * yTemp + x;
+      yTemp = 2 * xTemp * yTemp + y;
+    } else{
+      yTemp = abs(2* xTemp * yTemp) + y;
+      xtemp2 = xTemp * xTemp - yTemp * yTemp + x;
+    }
+
     xTemp = xtemp2;
     iterations = iterations + 1;
   }
@@ -49,9 +56,10 @@ EXTERN EMSCRIPTEN_KEEPALIVE uint64_t getOffset() { return (uint64_t)&result; }
 EXTERN EMSCRIPTEN_KEEPALIVE void calc(int canvasWidth, int canvasHeight,
                                       double translateX, double translateY,
                                       double scale, double scaleY, double start,
-                                      double end, int max_iter) {
+                                      double end, int max_iter, int selected_mode) {
   
   MAX_ITERATION = max_iter;
+  mode = selected_mode;
 
   for (int i = start; i < end; i++) {
     for (int j = 0; j < canvasHeight; j++) {
