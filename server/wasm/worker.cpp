@@ -42,8 +42,6 @@ EXTERN EMSCRIPTEN_KEEPALIVE void cal(double x, double y) {
     val[2] = int((0.5 + 0.5 * cos(6.2831 * co + 0.8)) * 255.0);
     val[3] = 128;
   }
-
- 
 }
 
 EXTERN EMSCRIPTEN_KEEPALIVE uint64_t getOffset() { return (uint64_t)&result; }
