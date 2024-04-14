@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="initial-scale=1" />
+    <title>Graph</title>
+    <style>
+      * {
+        user-select: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        image-rendering: pixelated;
+      }
+
+      .winbox {
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      #con {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      .winbox {
+        background: transparent;
+      }
+
+      .wb-body {
+        /* overflow: hidden; */
+        overflow: scroll;
+        transform-origin: 0 0;
+        background: rgb(255, 255, 255);
+      }
+
+      .wb-body * {
+        transform-origin: 0 0;
+      }
+
+      .wb-header {
+        background: #000000bf;
+        backdrop-filter: blur(10px);
+      }
+
+      .dg.ac {
+        z-index: 2147483647 !important;
+      }
+
+      .graphCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        image-rendering: pixelated !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="con">
+      <canvas id="canvas2"></canvas>
+      <canvas id="canvas"></canvas>
+      <canvas id="canvas3"></canvas>
+      <canvas id="canvas4"></canvas>
+    </div>
+
+    <script src="./utils/libs/winbox.js"></script>
+    <script src="./utils/libs/dat.gui.js"></script>
+    <script src="./utils/libs/stats.js"></script>
+    <script src="./utils/libs/gpu.js"></script>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>

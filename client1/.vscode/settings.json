@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "cmath": "cpp",
+        "cstdlib": "cpp",
+        "random": "cpp",
+        "vector": "cpp",
+        "chrono": "cpp",
+        "functional": "cpp",
+        "cstdint": "cpp",
+        "compare": "cpp",
+        "format": "cpp",
+        "*.frag": "c"
+    },
+    "editor.formatOnSave": true
+}
