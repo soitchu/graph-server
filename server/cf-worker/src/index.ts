@@ -22,7 +22,7 @@ async function handleRequest(request: Request) {
 		const width = end - start;
 
 		// Generating the image data
-		wasmModule.exports.calc(width, height, translateX, translateY, scale, scaleY, start, end, iterations, mode);
+		wasmModule.exports.calc(width, height, parseFloat(translateX), parseFloat(translateY), parseFloat(scale), scaleY, start, end, iterations, mode);
 		
 		// Pointer of the image data
 		const offset = Number(wasmModule.exports.getOffset());
