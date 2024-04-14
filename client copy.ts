@@ -1,3 +1,5 @@
+// import { Socket } from "socket.io";
+
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 let websocketArray: WebSocket[];
@@ -6,19 +8,18 @@ let responseCount = 0;
 let startTime: number;
 
 function instantiateWebSocket(url: string): Promise<WebSocket> {
-  return new Promise((resolve, reject) => { 
-    const websocket = new WebSocket(url);
+  return new Promise((resolve, reject) => {
+    // const websocket = new WebSocket(url);
+    // @ts-expect-error
+    const websocket = new io("");
 
-    websocket.addEventListener("message", async (event) => {
+    websocket.on("ping", async (arrayBuffer) => {
       // console.log(event);
-
-      const arrayBuffer = await new Response(event.data).arrayBuffer();
+      // const arrayBuffer = await new Response(event).arrayBuffer();
       const uint32 = new Uint32Array(arrayBuffer);
       const start = uint32[0];
       const end = uint32[1];
       const responseId = uint32[2];
-
-      console.log(responseId, globalResponseId, uint32);
 
       if (responseId === globalResponseId) {
         responseCount++;
@@ -30,7 +31,6 @@ function instantiateWebSocket(url: string): Promise<WebSocket> {
         return;
       }
 
-
       const imageData = new ImageData(
         new Uint8ClampedArray(arrayBuffer, 12),
         end - start,
@@ -40,13 +40,13 @@ function instantiateWebSocket(url: string): Promise<WebSocket> {
       ctx.putImageData(imageData, start, 0);
     });
 
-    websocket.addEventListener("open", () => {
+    websocket.on("connect", () => {
       resolve(websocket);
     });
   });
 }
 
-function start() {
+async function start() {
   const width = canvas.width;
   const partitionWidth = width / websocketArray.length;
   let startX = 0;
@@ -55,8 +55,19 @@ function start() {
   responseCount = 0;
   startTime = performance.now();
 
+  let index = 0;
+
   for (const socket of websocketArray) {
-    socket.send(
+    // if (
+    //   socket.readyState === socket.CLOSED ||
+    //   socket.readyState === socket.CLOSING
+    // ) {
+    //   console.log("A socket was closed. Instantiating a new one.");
+    //   websocketArray[index] = await instantiateWebSocket("");
+    // }
+
+    socket.emit(
+      "message",
       JSON.stringify({
         start: startX,
         end: startX + partitionWidth,
@@ -64,7 +75,9 @@ function start() {
         responseId: globalResponseId,
       })
     );
+
     startX += partitionWidth;
+    index++;
   }
 }
 
@@ -74,9 +87,7 @@ async function ini(partitionCount: number) {
   const partitions = websocketPromises.length;
 
   for (let i = 0; i < partitions; i++) {
-    websocketPromises[i] = instantiateWebSocket(
-      "wss://mute-frost-a247.graph-server.workers.dev/"
-    );
+    websocketPromises[i] = instantiateWebSocket("");
   }
 
   websocketArray = await Promise.all(websocketPromises);
@@ -86,7 +97,7 @@ async function ini(partitionCount: number) {
 function clear() {}
 
 // window.WebSocket;
-ini(10);
+ini(1);
 
 window.start = start;
 window.clear = clear;

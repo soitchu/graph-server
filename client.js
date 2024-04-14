@@ -1,4 +1,3 @@
-// import { Socket } from "socket.io";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -44,67 +43,56 @@ var startTime;
 function instantiateWebSocket(url) {
     var _this = this;
     return new Promise(function (resolve, reject) {
-        // const websocket = new WebSocket(url);
-        // @ts-expect-error
-        var websocket = new io("");
-        websocket.on("ping", function (arrayBuffer) { return __awaiter(_this, void 0, void 0, function () {
-            var uint32, start, end, responseId, imageData;
+        var websocket = new WebSocket(url);
+        websocket.addEventListener("message", function (event) { return __awaiter(_this, void 0, void 0, function () {
+            var arrayBuffer, uint32, start, end, responseId, imageData;
             return __generator(this, function (_a) {
-                uint32 = new Uint32Array(arrayBuffer);
-                start = uint32[0];
-                end = uint32[1];
-                responseId = uint32[2];
-                if (responseId === globalResponseId) {
-                    responseCount++;
-                    if (responseCount === websocketArray.length) {
-                        console.log("Total time: ".concat(startTime - performance.now(), "ms"));
-                    }
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, new Response(event.data).arrayBuffer()];
+                    case 1:
+                        arrayBuffer = _a.sent();
+                        uint32 = new Uint32Array(arrayBuffer);
+                        start = uint32[0];
+                        end = uint32[1];
+                        responseId = uint32[2];
+                        console.log(responseId, globalResponseId, uint32);
+                        if (responseId === globalResponseId) {
+                            responseCount++;
+                            if (responseCount === websocketArray.length) {
+                                console.log("Total time: ".concat(startTime - performance.now(), "ms"));
+                            }
+                        }
+                        else {
+                            return [2 /*return*/];
+                        }
+                        imageData = new ImageData(new Uint8ClampedArray(arrayBuffer, 12), end - start, canvas.height);
+                        ctx.putImageData(imageData, start, 0);
+                        return [2 /*return*/];
                 }
-                else {
-                    return [2 /*return*/];
-                }
-                imageData = new ImageData(new Uint8ClampedArray(arrayBuffer, 12), end - start, canvas.height);
-                ctx.putImageData(imageData, start, 0);
-                return [2 /*return*/];
             });
         }); });
-        websocket.on("connect", function () {
+        websocket.addEventListener("open", function () {
             resolve(websocket);
         });
     });
 }
 function start() {
-    return __awaiter(this, void 0, void 0, function () {
-        var width, partitionWidth, startX, index, _i, websocketArray_1, socket;
-        return __generator(this, function (_a) {
-            width = canvas.width;
-            partitionWidth = width / websocketArray.length;
-            startX = 0;
-            globalResponseId++;
-            responseCount = 0;
-            startTime = performance.now();
-            index = 0;
-            for (_i = 0, websocketArray_1 = websocketArray; _i < websocketArray_1.length; _i++) {
-                socket = websocketArray_1[_i];
-                // if (
-                //   socket.readyState === socket.CLOSED ||
-                //   socket.readyState === socket.CLOSING
-                // ) {
-                //   console.log("A socket was closed. Instantiating a new one.");
-                //   websocketArray[index] = await instantiateWebSocket("");
-                // }
-                socket.emit("message", JSON.stringify({
-                    start: startX,
-                    end: startX + partitionWidth,
-                    height: canvas.width,
-                    responseId: globalResponseId,
-                }));
-                startX += partitionWidth;
-                index++;
-            }
-            return [2 /*return*/];
-        });
-    });
+    var width = canvas.width;
+    var partitionWidth = width / websocketArray.length;
+    var startX = 0;
+    globalResponseId++;
+    responseCount = 0;
+    startTime = performance.now();
+    for (var _i = 0, websocketArray_1 = websocketArray; _i < websocketArray_1.length; _i++) {
+        var socket = websocketArray_1[_i];
+        socket.send(JSON.stringify({
+            start: startX,
+            end: startX + partitionWidth,
+            height: canvas.width,
+            responseId: globalResponseId,
+        }));
+        startX += partitionWidth;
+    }
 }
 function ini(partitionCount) {
     return __awaiter(this, void 0, void 0, function () {
@@ -115,7 +103,7 @@ function ini(partitionCount) {
                     websocketPromises = new Array(partitionCount);
                     partitions = websocketPromises.length;
                     for (i = 0; i < partitions; i++) {
-                        websocketPromises[i] = instantiateWebSocket("");
+                        websocketPromises[i] = instantiateWebSocket("wss://mute-frost-a247.graph-server.workers.dev/");
                     }
                     return [4 /*yield*/, Promise.all(websocketPromises)];
                 case 1:
