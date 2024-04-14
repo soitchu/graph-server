@@ -67,9 +67,9 @@ export class Remote extends GraphExtension {
                 end: startX + partitionWidth,
                 height: this.canvas.width,
                 responseId: this.globalResponseId,
-                translateX: this.window.graphInstance.translate.x,
-                translateY: this.window.graphInstance.translate.y,
-                scale: this.window.graphInstance.scale,
+                translateX: this.window.graphInstance.translate.x.toPrecision(53),
+                translateY: this.window.graphInstance.translate.y.toPrecision(53),
+                scale: this.window.graphInstance.scale.toPrecision(53),
                 scaleY: this.window.graphInstance.scaleY,
                 iterations: this.config.iterations,
                 mode: this.config.mode
