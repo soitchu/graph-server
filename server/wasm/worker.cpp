@@ -26,8 +26,8 @@ EXTERN EMSCRIPTEN_KEEPALIVE void cal(double x, double y) {
       xtemp2 = xTemp * xTemp - yTemp * yTemp + x;
       yTemp = 2 * xTemp * yTemp + y;
     } else{
-      yTemp = abs(2* xTemp * yTemp) + y;
       xtemp2 = xTemp * xTemp - yTemp * yTemp + x;
+      yTemp = abs(2* xTemp * yTemp) + y;
     }
 
     xTemp = xtemp2;
