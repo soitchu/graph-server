@@ -70,17 +70,6 @@ EXTERN EMSCRIPTEN_KEEPALIVE void calc(int canvasWidth, int canvasHeight,
       result[pixelPos + 1] = val[1];
       result[pixelPos + 2] = val[2];
       result[pixelPos + 3] = val[3];
-
-      // if(pixelPos % 5 == 0) {
-      //   result[pixelPos + 0] = 0;
-      //   result[pixelPos + 1] = 0;
-      //   result[pixelPos + 2] = 0;
-      // } else{
-      //   result[pixelPos + 0] = 255;
-      //   result[pixelPos + 1] = 255;
-      //   result[pixelPos + 2] = 255;
-      // }
-      // result[pixelPos + 3] = 255;
     }
   }
 }
