@@ -1,5 +1,8 @@
 # GraphServer_Lipsum
 
+## Live Demo
+https://graph-server.soitchu.com/
+
 ## Description
 This project distributes the work needed to generate CPU intensive graphs across multiple remote servers. 
 
@@ -13,5 +16,5 @@ Then this WASM module is distributed across multiple web socket servers. The cod
 
 Everything in the [server](./server/) folder was done during the hackathon. That said, the [front-end](./client) comes from another project of mine, which I didn't develop in this hackathon. I did have to write an [extension](./client/src/extensions/Examples/Remote/index.ts) for the front-end that uses the websocket servers to draw the final image. 
 
-## Demo
+## Demo video
 [Demo](https://github.com/soitchu/graph-server/assets/66003387/3ad2509c-3096-4fe4-864b-7e7a500cf27d)
