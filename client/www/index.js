@@ -2,13 +2,13 @@ import { Graph } from "./utils/Graph.js";
 import { GraphWindow } from "./utils/GraphWindow.js";
 import { DatConfig } from "./utils/config/index.js";
 import { Remote } from "./extensions/Examples/Remote/index.js";
-let graphInstance2 = new Graph(document.getElementById("canvas2"), 1000, 1000, false, {
+let graphInstance2 = new Graph(document.getElementById("canvas2"), window.innerHeight, window.innerWidth, false, {
     x: 1,
     y: 1
 });
 const gw = new GraphWindow({
-    height: 1000 + 35,
-    width: 1000,
+    height: window.innerHeight,
+    width: window.innerWidth,
     x: 0,
     y: 0
 }, graphInstance2, "Mandelbrot Fractal");

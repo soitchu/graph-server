@@ -5,16 +5,16 @@ import { Remote } from "./extensions/Examples/Remote/index.js";
 
 let graphInstance2 = new Graph(
   document.getElementById("canvas2") as HTMLCanvasElement,
-  1000,
-  1000,
+  window.innerHeight,
+  window.innerWidth,
   false,
   { x: 1, y: 1 }
 );
 
 const gw = new GraphWindow(
   {
-    height: 1000 + 35,
-    width: 1000,
+    height: window.innerHeight,
+    width: window.innerWidth,
     x: 0,
     y: 0,
   },
