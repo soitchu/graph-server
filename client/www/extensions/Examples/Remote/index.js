@@ -31,6 +31,7 @@ export class Remote extends GraphExtension {
                 } else {
                     return;
                 }
+                console.log(arrayBuffer, end - start, this.canvas.height);
                 const imageData = new ImageData(new Uint8ClampedArray(arrayBuffer, 12), end - start, this.canvas.height);
                 this.ctx.putImageData(imageData, start, 0);
             });
@@ -51,7 +52,7 @@ export class Remote extends GraphExtension {
     resizeCallback() {}
     async start() {
         const width = this.canvas.width;
-        const partitionWidth = width / this.websocketArray.length;
+        const partitionWidth = Math.floor(width / this.websocketArray.length);
         let startX = 0;
         this.globalResponseId++;
         this.responseCount = 0;
@@ -65,8 +66,8 @@ export class Remote extends GraphExtension {
             const payload = {
                 index: i,
                 start: startX,
-                end: startX + partitionWidth,
-                height: this.canvas.width,
+                end: i === this.websocketArray.length - 1 ? this.canvas.width : startX + partitionWidth,
+                height: this.canvas.height,
                 responseId: this.globalResponseId,
                 translateX: this.window.graphInstance.translate.x.toPrecision(53),
                 translateY: this.window.graphInstance.translate.y.toPrecision(53),

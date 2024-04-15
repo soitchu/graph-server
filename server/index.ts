@@ -62,6 +62,9 @@ wss.on("connection", function connection(ws) {
       Number(offset) - 12,
       width * height * 4 + 12
     );
+
+    console.log(width, height);
+
     let meta_data = new Uint32Array(wasmMemory.buffer, offset - 12);
 
     meta_data[0] = start;
