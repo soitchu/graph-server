@@ -45,7 +45,7 @@ const graphConfig = configGUI.processExtensionConfig(
     },
     {
       type: "slider",
-      max: 100000,
+      max: 5000,
       min: 100,
       step: 1,
       default: 500,
