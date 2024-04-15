@@ -61,8 +61,11 @@ EXTERN EMSCRIPTEN_KEEPALIVE void calc(int canvasWidth, int canvasHeight,
   MAX_ITERATION = max_iter;
   mode = selected_mode;
 
-  for (int i = start; i < end; i++) {
-    for (int j = 0; j < canvasHeight; j++) {
+  int index = 0;
+
+  for (int j = 0; j < canvasHeight; j++) {
+    for (int i = start; i < end; i++) {
+
       cal((float)i / scale - translateX,
           -((float)j / scale - translateY) / scaleY);
 
@@ -72,10 +75,12 @@ EXTERN EMSCRIPTEN_KEEPALIVE void calc(int canvasWidth, int canvasHeight,
         continue;
       }
 
-      result[pixelPos + 0] = val[0];
-      result[pixelPos + 1] = val[1];
-      result[pixelPos + 2] = val[2];
-      result[pixelPos + 3] = val[3];
+      result[index + 0] = val[0];
+      result[index + 1] = val[1];
+      result[index + 2] = val[2];
+      result[index + 3] = val[3];
+
+      index += 4;
     }
   }
 }

@@ -45,7 +45,7 @@ const graphConfig = configGUI.processExtensionConfig(
     },
     {
       type: "slider",
-      max: 4000,
+      max: 100000,
       min: 100,
       step: 1,
       default: 500,
@@ -68,3 +68,5 @@ const graphConfig = configGUI.processExtensionConfig(
 const remoteExt = new Remote(gw, graphConfig);
 remoteExt.ini(10);
 graphInstance2.addExtension(remoteExt);
+
+console.log(gw);

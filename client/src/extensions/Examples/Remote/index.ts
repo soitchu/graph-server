@@ -8,6 +8,7 @@ export class Remote extends GraphExtension {
   globalResponseId = 0;
   responseCount = 0;
   startTime: number;
+  // WSS_URL = "ws://localhost:8080";
   WSS_URL = "wss://mute-frost-a247.graph-server.workers.dev/";
 
   constructor(window: GraphWindow, config) {
