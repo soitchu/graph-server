@@ -29,8 +29,8 @@ let graphInstance2 = new Graph(
 );
 
 function resetState() {
-  graphInstance2.translate = {x: 9.963767658960176, y: 8.932518706145014, iniX: 0.732160576866839, iniY: -0.207958376657112}
-  graphInstance2.scale = 28.08083793198597
+  graphInstance2.translate = {x: 54.64697595042494, y: 46.53851300988376, iniX: 69.55176705168724, iniY: 72.548834735616}
+  graphInstance2.scale = 3.421718536912656
 }
 
 const gw = new GraphWindow(
