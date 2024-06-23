@@ -69,6 +69,7 @@ export abstract class GraphExtension {
       }
     }
 
+    console.log("================", this)
     this.resizeCallback(width, height);
   }
 

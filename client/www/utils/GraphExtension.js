@@ -47,6 +47,7 @@ export class GraphExtension {
                 this.viewportWidth = width;
             }
         }
+        console.log("================", this);
         this.resizeCallback(width, height);
     }
     initialize() {

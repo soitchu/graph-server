@@ -32,7 +32,7 @@ export class GraphWindow {
         // graphWindow.body.style.transform = `scale(${1 / scale})`;
         }
         graphWindow.graph = graphInstance;
-        graphWindow.graph.resize(config.width * scale, config.height * scale - graphWindow.h);
+        graphWindow.graph.resize(config.width * scale, config.height * scale - (config.shouldAnimate ? 0 : graphWindow.h));
         graphWindow.onresize = function(x, y) {
             clearTimeout(graphWindow.timeout);
             graphWindow.timeout = setTimeout(function() {

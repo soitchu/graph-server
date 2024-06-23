@@ -1,17 +1,29 @@
 import { GraphExtension } from "../../../utils/GraphExtension.js";
 export class Remote extends GraphExtension {
     config;
+    tripleBufferCanvas;
+    tripleBufferCtx;
+    redrawPromiseFunctions = {};
     websocketArray;
     globalResponseId = 0;
     responseCount = 0;
     startTime;
     // WSS_URL = "ws://localhost:8080";
     WSS_URL = "wss://mute-frost-a247.graph-server.workers.dev/";
-    constructor(window, config){
+    animate = false;
+    constructor(window, config, animate = false){
         super(window, true);
+        this.animate = animate;
+        this.tripleBufferCanvas = new OffscreenCanvas(window.graphInstance.width, window.graphInstance.height);
+        this.tripleBufferCtx = this.tripleBufferCanvas.getContext("2d");
         this.config = config;
     // this.canvas = window.graphInstance.frontCanvas;
     // this.canvas = window.graphInstance.frontCanvas;
+    }
+    resizeCallback(width, height) {
+        if (!this.tripleBufferCanvas) return;
+        this.tripleBufferCanvas.width = width;
+        this.tripleBufferCanvas.height = height;
     }
     instantiateWebSocket(url) {
         return new Promise((resolve, reject)=>{
@@ -22,18 +34,28 @@ export class Remote extends GraphExtension {
                 const start = uint32[0];
                 const end = uint32[1];
                 const responseId = uint32[2];
+                let hasFullImage = false;
                 // console.log(responseId, this.globalResponseId, uint32);
                 if (responseId === this.globalResponseId) {
                     this.responseCount++;
                     if (this.responseCount === this.websocketArray.length) {
                         console.log(`Total time: ${this.startTime - performance.now()}ms`);
+                        hasFullImage = true;
                     }
                 } else {
                     return;
                 }
                 console.log(arrayBuffer, end - start, this.canvas.height);
                 const imageData = new ImageData(new Uint8ClampedArray(arrayBuffer, 12), end - start, this.canvas.height);
-                this.ctx.putImageData(imageData, start, 0);
+                if (!this.animate) {
+                    this.ctx.putImageData(imageData, start, 0);
+                } else {
+                    this.tripleBufferCtx.putImageData(imageData, start, 0);
+                }
+                if (hasFullImage) {
+                    var _this_redrawPromiseFunctions;
+                    (_this_redrawPromiseFunctions = this.redrawPromiseFunctions) === null || _this_redrawPromiseFunctions === void 0 ? void 0 : _this_redrawPromiseFunctions.resolve();
+                }
             });
             websocket.addEventListener("open", ()=>{
                 resolve(websocket);
@@ -49,14 +71,18 @@ export class Remote extends GraphExtension {
             });
         });
     }
-    resizeCallback() {}
     async start() {
+        var _this_redrawPromiseFunctions;
         const width = this.canvas.width;
         const partitionWidth = Math.floor(width / this.websocketArray.length);
         let startX = 0;
         this.globalResponseId++;
         this.responseCount = 0;
         this.startTime = performance.now();
+        if (this.redrawPromiseFunctions.resolve) (_this_redrawPromiseFunctions = this.redrawPromiseFunctions) === null || _this_redrawPromiseFunctions === void 0 ? void 0 : _this_redrawPromiseFunctions.resolve();
+        const redrawPromise = new Promise((resolve, reject)=>{
+            this.redrawPromiseFunctions.resolve = resolve;
+        });
         for(let i = 0; i < this.websocketArray.length; i++){
             let socket = this.websocketArray[i];
             if (socket.readyState === socket.CLOSED || socket.readyState === socket.CLOSING) {
@@ -80,6 +106,7 @@ export class Remote extends GraphExtension {
             socket.send(JSON.stringify(payload));
             startX += partitionWidth;
         }
+        await redrawPromise;
     }
     async ini(partitionCount) {
         const websocketPromises = new Array(partitionCount);

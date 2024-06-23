@@ -4,19 +4,37 @@ import { GraphWindow } from "../../../utils/GraphWindow.js";
 export class Remote extends GraphExtension {
   config: any;
 
+  tripleBufferCanvas: OffscreenCanvas;
+  tripleBufferCtx: OffscreenCanvasRenderingContext2D;
+
+  redrawPromiseFunctions: {
+    resolve?: Function,
+    reject?: Function
+  } = {}
   websocketArray: WebSocket[];
   globalResponseId = 0;
   responseCount = 0;
   startTime: number;
   // WSS_URL = "ws://localhost:8080";
   WSS_URL = "wss://mute-frost-a247.graph-server.workers.dev/";
+  animate = false
 
-  constructor(window: GraphWindow, config) {
+  constructor(window: GraphWindow, config, animate = false) {
     super(window, true);
-    this.config = config;
 
+    this.animate = animate
+    this.tripleBufferCanvas = new OffscreenCanvas(window.graphInstance.width, window.graphInstance.height)
+    this.tripleBufferCtx = this.tripleBufferCanvas.getContext("2d")
+    this.config = config;
     // this.canvas = window.graphInstance.frontCanvas;
     // this.canvas = window.graphInstance.frontCanvas;
+  }
+
+  resizeCallback(width: number, height: number) {
+    if(!this.tripleBufferCanvas) return
+
+    this.tripleBufferCanvas.width = width  
+    this.tripleBufferCanvas.height = height  
   }
 
   instantiateWebSocket(url: string): Promise<WebSocket> {
@@ -29,7 +47,7 @@ export class Remote extends GraphExtension {
         const start = uint32[0];
         const end = uint32[1];
         const responseId = uint32[2];
-
+        let hasFullImage = false;
         // console.log(responseId, this.globalResponseId, uint32);
 
         if (responseId === this.globalResponseId) {
@@ -37,6 +55,7 @@ export class Remote extends GraphExtension {
 
           if (this.responseCount === this.websocketArray.length) {
             console.log(`Total time: ${this.startTime - performance.now()}ms`);
+            hasFullImage = true
           }
         } else {
           return;
@@ -49,8 +68,16 @@ export class Remote extends GraphExtension {
           end - start,
           this.canvas.height
         );
+        
+        if(!this.animate) {
+          this.ctx.putImageData(imageData, start, 0);
+        } else {
+          this.tripleBufferCtx.putImageData(imageData, start, 0);
+        }
 
-        this.ctx.putImageData(imageData, start, 0);
+        if(hasFullImage) {
+          this.redrawPromiseFunctions?.resolve()
+        }
       });
 
       websocket.addEventListener("open", () => {
@@ -74,8 +101,6 @@ export class Remote extends GraphExtension {
     });
   }
 
-  resizeCallback() {}
-
   async start() {
     const width = this.canvas.width;
     const partitionWidth = Math.floor(width / this.websocketArray.length);
@@ -84,6 +109,12 @@ export class Remote extends GraphExtension {
     this.globalResponseId++;
     this.responseCount = 0;
     this.startTime = performance.now();
+
+    if(this.redrawPromiseFunctions.resolve) this.redrawPromiseFunctions?.resolve()
+
+    const redrawPromise = new Promise((resolve, reject) => {
+      this.redrawPromiseFunctions.resolve = resolve
+    })
 
     for (let i = 0; i < this.websocketArray.length; i++) {
       let socket = this.websocketArray[i];
@@ -117,6 +148,8 @@ export class Remote extends GraphExtension {
       socket.send(JSON.stringify(payload));
       startX += partitionWidth;
     }
+
+    await redrawPromise
   }
 
   async ini(partitionCount: number) {

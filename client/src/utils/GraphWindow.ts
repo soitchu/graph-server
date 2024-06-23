@@ -49,7 +49,7 @@ export class GraphWindow {
     graphWindow.graph = graphInstance;
     graphWindow.graph.resize(
       config.width * scale,
-      config.height * scale - graphWindow.h
+      config.height * scale - (config.shouldAnimate ? 0 : graphWindow.h)
     );
 
     graphWindow.onresize = function (x: number, y: number) {
