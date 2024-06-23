@@ -88,6 +88,7 @@ export class Remote extends GraphExtension {
         const payload = websocket["payload"];
 
         if (payload.responseId === this.globalResponseId) {
+          await new Promise((resolve) => setTimeout(resolve, 100))
           this.websocketArray[payload.index] = await this.instantiateWebSocket(
             this.WSS_URL
           );
