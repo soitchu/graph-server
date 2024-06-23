@@ -92,6 +92,12 @@ export class Remote extends GraphExtension {
           this.websocketArray[payload.index] = await this.instantiateWebSocket(
             this.WSS_URL
           );
+          
+          payload.retries = payload.retries + 1
+
+          if(payload.retries > 10) {
+            payload.iterations = Math.floor(payload.iterations * 0.9);
+          }
 
           this.websocketArray[payload.index]["payload"] = payload;
           this.websocketArray[payload.index].send(JSON.stringify(payload));
@@ -143,6 +149,7 @@ export class Remote extends GraphExtension {
         scaleY: this.window.graphInstance.scaleY,
         iterations: this.config.iterations,
         mode: this.config.mode,
+        retries: 0
       };
 
       socket["payload"] = payload;

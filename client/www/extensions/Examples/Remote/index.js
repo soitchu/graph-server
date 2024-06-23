@@ -65,6 +65,10 @@ export class Remote extends GraphExtension {
                 if (payload.responseId === this.globalResponseId) {
                     await new Promise((resolve)=>setTimeout(resolve, 100));
                     this.websocketArray[payload.index] = await this.instantiateWebSocket(this.WSS_URL);
+                    payload.retries = payload.retries + 1;
+                    if (payload.retries > 10) {
+                        payload.iterations = Math.floor(payload.iterations * 0.9);
+                    }
                     this.websocketArray[payload.index]["payload"] = payload;
                     this.websocketArray[payload.index].send(JSON.stringify(payload));
                     console.log("Connection closed. The payload was", payload);
@@ -101,7 +105,8 @@ export class Remote extends GraphExtension {
                 scale: this.window.graphInstance.scale.toPrecision(53),
                 scaleY: this.window.graphInstance.scaleY,
                 iterations: this.config.iterations,
-                mode: this.config.mode
+                mode: this.config.mode,
+                retries: 0
             };
             socket["payload"] = payload;
             socket.send(JSON.stringify(payload));
